@@ -1,6 +1,6 @@
 package com.tienda.controllers;
 
-import static spark.Spark.*;
+import io.javalin.Javalin;
 import com.google.gson.Gson;
 import com.tienda.models.Cliente;
 import com.tienda.repositories.ClienteRepositorio;
@@ -9,84 +9,71 @@ public class ClienteController {
     static ClienteRepositorio repositorio = new ClienteRepositorio();
     static Gson gson = new Gson();
 
-    public static void init() {
-        post("/clientes", (req, res) -> {
+    public static void init(Javalin app) {
+        app.post("/clientes", ctx -> {
             try {
-                Cliente cliente = gson.fromJson(req.body(), Cliente.class);
+                Cliente cliente = gson.fromJson(ctx.body(), Cliente.class);
                 if (cliente == null) {
-                    res.status(400);
-                    return gson.toJson("Error: Datos inválidos");
+                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
+                    return;
                 }
                 repositorio.agregar(cliente);
-                res.status(201);
-                return gson.toJson(cliente);
+                ctx.status(201).result(gson.toJson(cliente));
             } catch (Exception e) {
-                res.status(500);
-                return gson.toJson("Error interno del servidor");
+                ctx.status(500).result(gson.toJson("Error interno del servidor"));
             }
         });
 
-        get("/clientes", (req, res) -> {
-            res.type("application/json");
-            return gson.toJson(repositorio.obtenerTodos());
-        });
+        app.get("/clientes", ctx ->
+                ctx.contentType("application/json").result(gson.toJson(repositorio.obtenerTodos()))
+        );
 
-        get("/clientes/:id", (req, res) -> {
+        app.get("/clientes/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
+                int id = Integer.parseInt(ctx.pathParam("id"));
                 Cliente cliente = repositorio.obtener(id);
                 if (cliente != null) {
-                    res.type("application/json");
-                    return gson.toJson(cliente);
+                    ctx.contentType("application/json").result(gson.toJson(cliente));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Cliente no encontrado");
+                    ctx.status(404).result(gson.toJson("Cliente no encontrado"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             }
         });
 
-        put("/clientes/:id", (req, res) -> {
+        app.put("/clientes/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
-                Cliente cliente = gson.fromJson(req.body(), Cliente.class);
+                int id = Integer.parseInt(ctx.pathParam("id"));
+                Cliente cliente = gson.fromJson(ctx.body(), Cliente.class);
                 if (cliente == null) {
-                    res.status(400);
-                    return gson.toJson("Error: Datos inválidos");
+                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
+                    return;
                 }
                 Cliente clienteActualizado = repositorio.actualizar(id, cliente);
                 if (clienteActualizado != null) {
-                    res.type("application/json");
-                    return gson.toJson(clienteActualizado);
+                    ctx.contentType("application/json").result(gson.toJson(clienteActualizado));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Cliente no encontrado");
+                    ctx.status(404).result(gson.toJson("Cliente no encontrado"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             } catch (Exception e) {
-                res.status(500);
-                return gson.toJson("Error interno del servidor");
+                ctx.status(500).result(gson.toJson("Error interno del servidor"));
             }
         });
 
-        delete("/clientes/:id", (req, res) -> {
+        app.delete("/clientes/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
+                int id = Integer.parseInt(ctx.pathParam("id"));
                 boolean eliminado = repositorio.eliminar(id);
                 if (eliminado) {
-                    res.status(200);
-                    return gson.toJson("Cliente eliminado");
+                    ctx.status(200).result(gson.toJson("Cliente eliminado"));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Cliente no encontrado");
+                    ctx.status(404).result(gson.toJson("Cliente no encontrado"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             }
         });
     }

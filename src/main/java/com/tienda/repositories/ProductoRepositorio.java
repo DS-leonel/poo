@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProductoRepositorio {
-    private Map<Integer, Producto> productos = new HashMap<>();
+    private final Map<Integer, Producto> productos = new HashMap<>();
 
     public Producto agregar(Producto producto) {
         productos.put(producto.getId(), producto);

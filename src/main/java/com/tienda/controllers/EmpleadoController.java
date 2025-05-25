@@ -1,6 +1,6 @@
 package com.tienda.controllers;
 
-import static spark.Spark.*;
+import io.javalin.Javalin;
 import com.google.gson.Gson;
 import com.tienda.models.Empleado;
 import com.tienda.repositories.EmpleadoRepositorio;
@@ -9,84 +9,71 @@ public class EmpleadoController {
     static EmpleadoRepositorio repositorio = new EmpleadoRepositorio();
     static Gson gson = new Gson();
 
-    public static void init() {
-        post("/empleados", (req, res) -> {
+    public static void init(Javalin app) {
+        app.post("/empleados", ctx -> {
             try {
-                Empleado empleado = gson.fromJson(req.body(), Empleado.class);
+                Empleado empleado = gson.fromJson(ctx.body(), Empleado.class);
                 if (empleado == null || empleado.getNombre() == null || empleado.getPuesto() == null) {
-                    res.status(400);
-                    return gson.toJson("Error: Datos inválidos");
+                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
+                    return;
                 }
                 repositorio.agregar(empleado);
-                res.status(201);
-                return gson.toJson(empleado);
+                ctx.status(201).result(gson.toJson(empleado));
             } catch (Exception e) {
-                res.status(500);
-                return gson.toJson("Error interno del servidor");
+                ctx.status(500).result(gson.toJson("Error interno del servidor"));
             }
         });
 
-        get("/empleados", (req, res) -> {
-            res.type("application/json");
-            return gson.toJson(repositorio.obtenerTodos());
-        });
+        app.get("/empleados", ctx ->
+                ctx.contentType("application/json").result(gson.toJson(repositorio.obtenerTodos()))
+        );
 
-        get("/empleados/:id", (req, res) -> {
+        app.get("/empleados/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
+                int id = Integer.parseInt(ctx.pathParam("id"));
                 Empleado empleado = repositorio.obtener(id);
                 if (empleado != null) {
-                    res.type("application/json");
-                    return gson.toJson(empleado);
+                    ctx.contentType("application/json").result(gson.toJson(empleado));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Empleado no encontrado");
+                    ctx.status(404).result(gson.toJson("Empleado no encontrado"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             }
         });
 
-        put("/empleados/:id", (req, res) -> {
+        app.put("/empleados/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
-                Empleado empleado = gson.fromJson(req.body(), Empleado.class);
+                int id = Integer.parseInt(ctx.pathParam("id"));
+                Empleado empleado = gson.fromJson(ctx.body(), Empleado.class);
                 if (empleado == null || empleado.getNombre() == null || empleado.getPuesto() == null) {
-                    res.status(400);
-                    return gson.toJson("Error: Datos inválidos");
+                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
+                    return;
                 }
                 Empleado empleadoActualizado = repositorio.actualizar(id, empleado);
                 if (empleadoActualizado != null) {
-                    res.type("application/json");
-                    return gson.toJson(empleadoActualizado);
+                    ctx.contentType("application/json").result(gson.toJson(empleadoActualizado));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Empleado no encontrado");
+                    ctx.status(404).result(gson.toJson("Empleado no encontrado"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             } catch (Exception e) {
-                res.status(500);
-                return gson.toJson("Error interno del servidor");
+                ctx.status(500).result(gson.toJson("Error interno del servidor"));
             }
         });
 
-        delete("/empleados/:id", (req, res) -> {
+        app.delete("/empleados/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
+                int id = Integer.parseInt(ctx.pathParam("id"));
                 boolean eliminado = repositorio.eliminar(id);
                 if (eliminado) {
-                    res.status(200);
-                    return gson.toJson("Empleado eliminado");
+                    ctx.status(200).result(gson.toJson("Empleado eliminado"));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Empleado no encontrado");
+                    ctx.status(404).result(gson.toJson("Empleado no encontrado"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             }
         });
     }

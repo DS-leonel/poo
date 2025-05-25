@@ -1,6 +1,6 @@
 package com.tienda.controllers;
 
-import static spark.Spark.*;
+import io.javalin.Javalin;
 import com.google.gson.Gson;
 import com.tienda.models.Categoria;
 import com.tienda.repositories.CategoriaRepositorio;
@@ -9,84 +9,71 @@ public class CategoriaController {
     static CategoriaRepositorio repositorio = new CategoriaRepositorio();
     static Gson gson = new Gson();
 
-    public static void init() {
-        post("/categorias", (req, res) -> {
+    public static void init(Javalin app) {
+        app.post("/categorias", ctx -> {
             try {
-                Categoria categoria = gson.fromJson(req.body(), Categoria.class);
+                Categoria categoria = gson.fromJson(ctx.body(), Categoria.class);
                 if (categoria == null) {
-                    res.status(400);
-                    return gson.toJson("Error: Datos inválidos");
+                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
+                    return;
                 }
                 repositorio.agregar(categoria);
-                res.status(201);
-                return gson.toJson(categoria);
+                ctx.status(201).result(gson.toJson(categoria));
             } catch (Exception e) {
-                res.status(500);
-                return gson.toJson("Error interno del servidor");
+                ctx.status(500).result(gson.toJson("Error interno del servidor"));
             }
         });
 
-        get("/categorias", (req, res) -> {
-            res.type("application/json");
-            return gson.toJson(repositorio.obtenerTodos());
-        });
+        app.get("/categorias", ctx ->
+                ctx.contentType("application/json").result(gson.toJson(repositorio.obtenerTodos()))
+        );
 
-        get("/categorias/:id", (req, res) -> {
+        app.get("/categorias/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
+                int id = Integer.parseInt(ctx.pathParam("id"));
                 Categoria categoria = repositorio.obtener(id);
                 if (categoria != null) {
-                    res.type("application/json");
-                    return gson.toJson(categoria);
+                    ctx.contentType("application/json").result(gson.toJson(categoria));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Categoría no encontrada");
+                    ctx.status(404).result(gson.toJson("Categoría no encontrada"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             }
         });
 
-        put("/categorias/:id", (req, res) -> {
+        app.put("/categorias/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
-                Categoria categoria = gson.fromJson(req.body(), Categoria.class);
+                int id = Integer.parseInt(ctx.pathParam("id"));
+                Categoria categoria = gson.fromJson(ctx.body(), Categoria.class);
                 if (categoria == null) {
-                    res.status(400);
-                    return gson.toJson("Error: Datos inválidos");
+                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
+                    return;
                 }
                 Categoria categoriaActualizada = repositorio.actualizar(id, categoria);
                 if (categoriaActualizada != null) {
-                    res.type("application/json");
-                    return gson.toJson(categoriaActualizada);
+                    ctx.contentType("application/json").result(gson.toJson(categoriaActualizada));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Categoría no encontrada");
+                    ctx.status(404).result(gson.toJson("Categoría no encontrada"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             } catch (Exception e) {
-                res.status(500);
-                return gson.toJson("Error interno del servidor");
+                ctx.status(500).result(gson.toJson("Error interno del servidor"));
             }
         });
 
-        delete("/categorias/:id", (req, res) -> {
+        app.delete("/categorias/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
+                int id = Integer.parseInt(ctx.pathParam("id"));
                 boolean eliminado = repositorio.eliminar(id);
                 if (eliminado) {
-                    res.status(200);
-                    return gson.toJson("Categoría eliminada");
+                    ctx.status(200).result(gson.toJson("Categoría eliminada"));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Categoría no encontrada");
+                    ctx.status(404).result(gson.toJson("Categoría no encontrada"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             }
         });
     }

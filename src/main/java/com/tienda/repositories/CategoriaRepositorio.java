@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CategoriaRepositorio {
-    private Map<Integer, Categoria> categorias = new HashMap<>();
+    private final Map<Integer, Categoria> categorias = new HashMap<>();
 
     public void agregar(Categoria categoria) {
         categorias.put(categoria.getId(), categoria);

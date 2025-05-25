@@ -1,6 +1,6 @@
 package com.tienda.controllers;
 
-import static spark.Spark.*;
+import io.javalin.Javalin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tienda.models.Producto;
@@ -10,84 +10,71 @@ public class ProductoController {
     static ProductoRepositorio repositorio = new ProductoRepositorio();
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public static void init() {
-        post("/productos", (req, res) -> {
+    public static void init(Javalin app) {
+        app.post("/productos", ctx -> {
             try {
-                Producto producto = gson.fromJson(req.body(), Producto.class);
+                Producto producto = gson.fromJson(ctx.body(), Producto.class);
                 if (producto == null) {
-                    res.status(400);
-                    return gson.toJson("Error: Datos inválidos");
+                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
+                    return;
                 }
                 repositorio.agregar(producto);
-                res.status(201);
-                return gson.toJson(producto);
+                ctx.status(201).result(gson.toJson(producto));
             } catch (Exception e) {
-                res.status(500);
-                return gson.toJson("Error interno del servidor");
+                ctx.status(500).result(gson.toJson("Error interno del servidor"));
             }
         });
 
-        get("/productos", (req, res) -> {
-            res.type("application/json");
-            return gson.toJson(repositorio.obtenerTodos());
-        });
+        app.get("/productos", ctx ->
+                ctx.contentType("application/json").result(gson.toJson(repositorio.obtenerTodos()))
+        );
 
-        get("/productos/:id", (req, res) -> {
+        app.get("/productos/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
+                int id = Integer.parseInt(ctx.pathParam("id"));
                 Producto producto = repositorio.obtener(id);
                 if (producto != null) {
-                    res.type("application/json");
-                    return gson.toJson(producto);
+                    ctx.contentType("application/json").result(gson.toJson(producto));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Producto no encontrado");
+                    ctx.status(404).result(gson.toJson("Producto no encontrado"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             }
         });
 
-        put("/productos/:id", (req, res) -> {
+        app.put("/productos/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
-                Producto producto = gson.fromJson(req.body(), Producto.class);
+                int id = Integer.parseInt(ctx.pathParam("id"));
+                Producto producto = gson.fromJson(ctx.body(), Producto.class);
                 if (producto == null) {
-                    res.status(400);
-                    return gson.toJson("Error: Datos inválidos");
+                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
+                    return;
                 }
                 Producto productoActualizado = repositorio.actualizar(id, producto);
                 if (productoActualizado != null) {
-                    res.type("application/json");
-                    return gson.toJson(productoActualizado);
+                    ctx.contentType("application/json").result(gson.toJson(productoActualizado));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Producto no encontrado");
+                    ctx.status(404).result(gson.toJson("Producto no encontrado"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             } catch (Exception e) {
-                res.status(500);
-                return gson.toJson("Error interno del servidor");
+                ctx.status(500).result(gson.toJson("Error interno del servidor"));
             }
         });
 
-        delete("/productos/:id", (req, res) -> {
+        app.delete("/productos/{id}", ctx -> {
             try {
-                int id = Integer.parseInt(req.params(":id"));
+                int id = Integer.parseInt(ctx.pathParam("id"));
                 boolean eliminado = repositorio.eliminar(id);
                 if (eliminado) {
-                    res.status(200);
-                    return gson.toJson("Producto eliminado");
+                    ctx.status(200).result(gson.toJson("Producto eliminado"));
                 } else {
-                    res.status(404);
-                    return gson.toJson("Producto no encontrado");
+                    ctx.status(404).result(gson.toJson("Producto no encontrado"));
                 }
             } catch (NumberFormatException e) {
-                res.status(400);
-                return gson.toJson("Error: ID inválido");
+                ctx.status(400).result(gson.toJson("Error: ID inválido"));
             }
         });
     }
