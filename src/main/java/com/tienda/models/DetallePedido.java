@@ -9,41 +9,33 @@ public class DetallePedido {
     public DetallePedido() {}
 
     public DetallePedido(int id, int pedidoId, int productoId, int cantidad) {
-        this.id = id;
-        this.pedidoId = pedidoId;
-        this.productoId = productoId;
-        this.cantidad = cantidad;
+        setId(id);
+        setPedidoId(pedidoId);
+        setProductoId(productoId);
+        setCantidad(cantidad);
     }
 
-    public int getId() {
-        return id;
-    }
-
+    public int getId() { return id; }
     public void setId(int id) {
+        if (id <= 0) throw new IllegalArgumentException("ID debe ser > 0");
         this.id = id;
     }
 
-    public int getPedidoId() {
-        return pedidoId;
-    }
-
+    public int getPedidoId() { return pedidoId; }
     public void setPedidoId(int pedidoId) {
+        if (pedidoId <= 0) throw new IllegalArgumentException("PedidoId debe ser > 0");
         this.pedidoId = pedidoId;
     }
 
-    public int getProductoId() {
-        return productoId;
-    }
-
+    public int getProductoId() { return productoId; }
     public void setProductoId(int productoId) {
+        if (productoId <= 0) throw new IllegalArgumentException("ProductoId debe ser > 0");
         this.productoId = productoId;
     }
 
-    public int getCantidad() {
-        return cantidad;
-    }
-
+    public int getCantidad() { return cantidad; }
     public void setCantidad(int cantidad) {
+        if (cantidad <= 0) throw new IllegalArgumentException("Cantidad debe ser > 0");
         this.cantidad = cantidad;
     }
 }

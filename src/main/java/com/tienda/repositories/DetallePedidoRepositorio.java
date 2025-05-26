@@ -1,34 +1,49 @@
 package com.tienda.repositories;
 
 import com.tienda.models.DetallePedido;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DetallePedidoRepositorio {
     private final Map<Integer, DetallePedido> detalles = new HashMap<>();
 
-    public DetallePedido agregar(DetallePedido detalle) {
-        detalles.put(detalle.getId(), detalle);
-        return detalle;
+    public void agregar(DetallePedido d) {
+        validar(d);
+        if (detalles.containsKey(d.getId())) {
+            throw new IllegalArgumentException("Ya existe un detalle con ese ID");
+        }
+        detalles.put(d.getId(), d);
+    }
+
+    public List<DetallePedido> obtenerTodos() {
+        return new ArrayList<>(detalles.values());
     }
 
     public DetallePedido obtener(int id) {
+        validarId(id);
         return detalles.get(id);
     }
 
-    public Map<Integer, DetallePedido> obtenerTodos() {
-        return detalles;
+    public DetallePedido actualizar(int id, DetallePedido d) {
+        validarId(id);
+        validar(d);
+        detalles.put(id, d);
+        return d;
     }
 
-    public DetallePedido actualizar(int id, DetallePedido detalle) {
-        if (detalles.containsKey(id)) {
-            detalles.put(id, detalle);
-            return detalle;
+    public void eliminar(int id) {
+        validarId(id);
+        detalles.remove(id);
+    }
+
+    private void validar(DetallePedido d) {
+        if (d == null || d.getCantidad() <= 0) {
+            throw new IllegalArgumentException("Datos inválidos del detalle");
         }
-        return null;
     }
 
-    public boolean eliminar(int id) {
-        return detalles.remove(id) != null;
+    private void validarId(int id) {
+        if (!detalles.containsKey(id)) {
+            throw new IllegalArgumentException("Detalle no encontrado");
+        }
     }
 }

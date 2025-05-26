@@ -1,37 +1,49 @@
 package com.tienda.repositories;
 
 import com.tienda.models.Empleado;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class EmpleadoRepositorio {
-    private final List<Empleado> empleados = new ArrayList<>();
+    private final Map<Integer, Empleado> empleados = new HashMap<>();
 
-    public synchronized void agregar(Empleado empleado) {
-        empleados.add(empleado);
-    }
-
-    public synchronized List<Empleado> obtenerTodos() {
-        return new ArrayList<>(empleados);
-    }
-
-    public synchronized Empleado obtener(int id) {
-        return empleados.stream()
-                .filter(e -> e.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
-
-    public synchronized Empleado actualizar(int id, Empleado nuevoEmpleado) {
-        Empleado empleado = obtener(id);
-        if (empleado != null) {
-            empleado.setNombre(nuevoEmpleado.getNombre());
-            empleado.setPuesto(nuevoEmpleado.getPuesto());
+    public void agregar(Empleado e) {
+        validar(e);
+        if (empleados.containsKey(e.getId())) {
+            throw new IllegalArgumentException("Ya existe un empleado con ese ID");
         }
-        return empleado;
+        empleados.put(e.getId(), e);
     }
 
-    public synchronized boolean eliminar(int id) {
-        return empleados.removeIf(e -> e.getId() == id);
+    public List<Empleado> obtenerTodos() {
+        return new ArrayList<>(empleados.values());
+    }
+
+    public Empleado obtener(int id) {
+        validarId(id);
+        return empleados.get(id);
+    }
+
+    public Empleado actualizar(int id, Empleado e) {
+        validarId(id);
+        validar(e);
+        empleados.put(id, e);
+        return e;
+    }
+
+    public void eliminar(int id) {
+        validarId(id);
+        empleados.remove(id);
+    }
+
+    private void validar(Empleado e) {
+        if (e == null || e.getNombre() == null || e.getNombre().isEmpty()) {
+            throw new IllegalArgumentException("Datos inválidos del empleado");
+        }
+    }
+
+    private void validarId(int id) {
+        if (!empleados.containsKey(id)) {
+            throw new IllegalArgumentException("Empleado no encontrado");
+        }
     }
 }

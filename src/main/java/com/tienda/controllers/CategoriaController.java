@@ -11,70 +11,28 @@ public class CategoriaController {
 
     public static void init(Javalin app) {
         app.post("/categorias", ctx -> {
-            try {
-                Categoria categoria = gson.fromJson(ctx.body(), Categoria.class);
-                if (categoria == null) {
-                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
-                    return;
-                }
-                repositorio.agregar(categoria);
-                ctx.status(201).result(gson.toJson(categoria));
-            } catch (Exception e) {
-                ctx.status(500).result(gson.toJson("Error interno del servidor"));
-            }
+            Categoria categoria = gson.fromJson(ctx.body(), Categoria.class);
+            repositorio.agregar(categoria);
+            ctx.status(201).json(categoria);
         });
 
-        app.get("/categorias", ctx ->
-                ctx.contentType("application/json").result(gson.toJson(repositorio.obtenerTodos()))
-        );
+        app.get("/categorias", ctx -> ctx.json(repositorio.obtenerTodos()));
 
         app.get("/categorias/{id}", ctx -> {
-            try {
-                int id = Integer.parseInt(ctx.pathParam("id"));
-                Categoria categoria = repositorio.obtener(id);
-                if (categoria != null) {
-                    ctx.contentType("application/json").result(gson.toJson(categoria));
-                } else {
-                    ctx.status(404).result(gson.toJson("Categoría no encontrada"));
-                }
-            } catch (NumberFormatException e) {
-                ctx.status(400).result(gson.toJson("Error: ID inválido"));
-            }
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            ctx.json(repositorio.obtener(id));
         });
 
         app.put("/categorias/{id}", ctx -> {
-            try {
-                int id = Integer.parseInt(ctx.pathParam("id"));
-                Categoria categoria = gson.fromJson(ctx.body(), Categoria.class);
-                if (categoria == null) {
-                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
-                    return;
-                }
-                Categoria categoriaActualizada = repositorio.actualizar(id, categoria);
-                if (categoriaActualizada != null) {
-                    ctx.contentType("application/json").result(gson.toJson(categoriaActualizada));
-                } else {
-                    ctx.status(404).result(gson.toJson("Categoría no encontrada"));
-                }
-            } catch (NumberFormatException e) {
-                ctx.status(400).result(gson.toJson("Error: ID inválido"));
-            } catch (Exception e) {
-                ctx.status(500).result(gson.toJson("Error interno del servidor"));
-            }
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            Categoria categoria = gson.fromJson(ctx.body(), Categoria.class);
+            ctx.json(repositorio.actualizar(id, categoria));
         });
 
         app.delete("/categorias/{id}", ctx -> {
-            try {
-                int id = Integer.parseInt(ctx.pathParam("id"));
-                boolean eliminado = repositorio.eliminar(id);
-                if (eliminado) {
-                    ctx.status(200).result(gson.toJson("Categoría eliminada"));
-                } else {
-                    ctx.status(404).result(gson.toJson("Categoría no encontrada"));
-                }
-            } catch (NumberFormatException e) {
-                ctx.status(400).result(gson.toJson("Error: ID inválido"));
-            }
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            repositorio.eliminar(id);
+            ctx.result("Categoría eliminada");
         });
     }
 }

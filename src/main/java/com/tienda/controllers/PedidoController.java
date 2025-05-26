@@ -11,70 +11,28 @@ public class PedidoController {
 
     public static void init(Javalin app) {
         app.post("/pedidos", ctx -> {
-            try {
-                Pedido pedido = gson.fromJson(ctx.body(), Pedido.class);
-                if (pedido == null || pedido.getId() == null) {
-                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
-                    return;
-                }
-                repositorio.agregar(pedido);
-                ctx.status(201).result(gson.toJson(pedido));
-            } catch (Exception e) {
-                ctx.status(500).result(gson.toJson("Error interno del servidor"));
-            }
+            Pedido pedido = gson.fromJson(ctx.body(), Pedido.class);
+            repositorio.agregar(pedido);
+            ctx.status(201).json(pedido);
         });
 
-        app.get("/pedidos", ctx ->
-                ctx.contentType("application/json").result(gson.toJson(repositorio.obtenerTodos()))
-        );
+        app.get("/pedidos", ctx -> ctx.json(repositorio.obtenerTodos()));
 
         app.get("/pedidos/{id}", ctx -> {
-            try {
-                int id = Integer.parseInt(ctx.pathParam("id"));
-                Pedido pedido = repositorio.obtener(id);
-                if (pedido != null) {
-                    ctx.contentType("application/json").result(gson.toJson(pedido));
-                } else {
-                    ctx.status(404).result(gson.toJson("Pedido no encontrado"));
-                }
-            } catch (NumberFormatException e) {
-                ctx.status(400).result(gson.toJson("Error: ID inválido"));
-            }
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            ctx.json(repositorio.obtener(id));
         });
 
         app.put("/pedidos/{id}", ctx -> {
-            try {
-                int id = Integer.parseInt(ctx.pathParam("id"));
-                Pedido pedido = gson.fromJson(ctx.body(), Pedido.class);
-                if (pedido == null) {
-                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
-                    return;
-                }
-                Pedido pedidoActualizado = repositorio.actualizar(id, pedido);
-                if (pedidoActualizado != null) {
-                    ctx.contentType("application/json").result(gson.toJson(pedidoActualizado));
-                } else {
-                    ctx.status(404).result(gson.toJson("Pedido no encontrado"));
-                }
-            } catch (NumberFormatException e) {
-                ctx.status(400).result(gson.toJson("Error: ID inválido"));
-            } catch (Exception e) {
-                ctx.status(500).result(gson.toJson("Error interno del servidor"));
-            }
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            Pedido pedido = gson.fromJson(ctx.body(), Pedido.class);
+            ctx.json(repositorio.actualizar(id, pedido));
         });
 
         app.delete("/pedidos/{id}", ctx -> {
-            try {
-                int id = Integer.parseInt(ctx.pathParam("id"));
-                boolean eliminado = repositorio.eliminar(id);
-                if (eliminado) {
-                    ctx.status(200).result(gson.toJson("Pedido eliminado"));
-                } else {
-                    ctx.status(404).result(gson.toJson("Pedido no encontrado"));
-                }
-            } catch (NumberFormatException e) {
-                ctx.status(400).result(gson.toJson("Error: ID inválido"));
-            }
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            repositorio.eliminar(id);
+            ctx.result("Pedido eliminado");
         });
     }
 }

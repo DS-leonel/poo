@@ -1,34 +1,49 @@
 package com.tienda.repositories;
 
 import com.tienda.models.Pedido;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PedidoRepositorio {
     private final Map<Integer, Pedido> pedidos = new HashMap<>();
 
-    public Pedido agregar(Pedido pedido) {
-        pedidos.put(pedido.getId(), pedido);
-        return pedido;
+    public void agregar(Pedido p) {
+        validar(p);
+        if (pedidos.containsKey(p.getId())) {
+            throw new IllegalArgumentException("Ya existe un pedido con ese ID");
+        }
+        pedidos.put(p.getId(), p);
+    }
+
+    public List<Pedido> obtenerTodos() {
+        return new ArrayList<>(pedidos.values());
     }
 
     public Pedido obtener(int id) {
+        validarId(id);
         return pedidos.get(id);
     }
 
-    public Map<Integer, Pedido> obtenerTodos() {
-        return pedidos;
+    public Pedido actualizar(int id, Pedido p) {
+        validarId(id);
+        validar(p);
+        pedidos.put(id, p);
+        return p;
     }
 
-    public Pedido actualizar(int id, Pedido pedido) {
-        if (pedidos.containsKey(id)) {
-            pedidos.put(id, pedido);
-            return pedido;
+    public void eliminar(int id) {
+        validarId(id);
+        pedidos.remove(id);
+    }
+
+    private void validar(Pedido p) {
+        if (p == null || p.getFecha() == null) {
+            throw new IllegalArgumentException("Datos inválidos del pedido");
         }
-        return null;
     }
 
-    public boolean eliminar(int id) {
-        return pedidos.remove(id) != null;
+    private void validarId(int id) {
+        if (!pedidos.containsKey(id)) {
+            throw new IllegalArgumentException("Pedido no encontrado");
+        }
     }
 }

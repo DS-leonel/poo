@@ -1,43 +1,34 @@
 package com.tienda.models;
 
-import java.util.List;
-
 public class Pedido {
-    private Integer id;
-    private Integer clienteId;
-    private List<Producto> productos;
-    private Double total;
+    private int id;
+    private int clienteId;
+    private String fecha; // Podrías usar LocalDate si quieres
 
-    // Getters y setters
-    public Integer getId() {
-        return id;
+    public Pedido() {}
+
+    public Pedido(int id, int clienteId, String fecha) {
+        setId(id);
+        setClienteId(clienteId);
+        setFecha(fecha);
     }
 
-    public void setId(Integer id) {
+    public int getId() { return id; }
+    public void setId(int id) {
+        if (id <= 0) throw new IllegalArgumentException("ID debe ser > 0");
         this.id = id;
     }
 
-    public Integer getClienteId() {
-        return clienteId;
-    }
-
-    public void setClienteId(Integer clienteId) {
+    public int getClienteId() { return clienteId; }
+    public void setClienteId(int clienteId) {
+        if (clienteId <= 0) throw new IllegalArgumentException("ClienteId debe ser > 0");
         this.clienteId = clienteId;
     }
 
-    public List<Producto> getProductos() {
-        return productos;
-    }
-
-    public void setProductos(List<Producto> productos) {
-        this.productos = productos;
-    }
-
-    public Double getTotal() {
-        return total;
-    }
-
-    public void setTotal(Double total) {
-        this.total = total;
+    public String getFecha() { return fecha; }
+    public void setFecha(String fecha) {
+        if (fecha == null || fecha.trim().isEmpty())
+            throw new IllegalArgumentException("Fecha no puede estar vacía");
+        this.fecha = fecha;
     }
 }

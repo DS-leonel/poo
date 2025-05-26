@@ -10,71 +10,29 @@ public class DetallePedidoController {
     static Gson gson = new Gson();
 
     public static void init(Javalin app) {
-        app.post("/detalle-pedido", ctx -> {
-            try {
-                DetallePedido detalle = gson.fromJson(ctx.body(), DetallePedido.class);
-                if (detalle == null || detalle.getId() == 0) {
-                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
-                    return;
-                }
-                repositorio.agregar(detalle);
-                ctx.status(201).result(gson.toJson(detalle));
-            } catch (Exception e) {
-                ctx.status(500).result(gson.toJson("Error interno del servidor"));
-            }
+        app.post("/detalle-pedidos", ctx -> {
+            DetallePedido detalle = gson.fromJson(ctx.body(), DetallePedido.class);
+            repositorio.agregar(detalle);
+            ctx.status(201).json(detalle);
         });
 
-        app.get("/detalle-pedido", ctx ->
-                ctx.contentType("application/json").result(gson.toJson(repositorio.obtenerTodos()))
-        );
+        app.get("/detalle-pedidos", ctx -> ctx.json(repositorio.obtenerTodos()));
 
-        app.get("/detalle-pedido/{id}", ctx -> {
-            try {
-                int id = Integer.parseInt(ctx.pathParam("id"));
-                DetallePedido detalle = repositorio.obtener(id);
-                if (detalle != null) {
-                    ctx.contentType("application/json").result(gson.toJson(detalle));
-                } else {
-                    ctx.status(404).result(gson.toJson("DetallePedido no encontrado"));
-                }
-            } catch (NumberFormatException e) {
-                ctx.status(400).result(gson.toJson("Error: ID inválido"));
-            }
+        app.get("/detalle-pedidos/{id}", ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            ctx.json(repositorio.obtener(id));
         });
 
-        app.put("/detalle-pedido/{id}", ctx -> {
-            try {
-                int id = Integer.parseInt(ctx.pathParam("id"));
-                DetallePedido detalle = gson.fromJson(ctx.body(), DetallePedido.class);
-                if (detalle == null) {
-                    ctx.status(400).result(gson.toJson("Error: Datos inválidos"));
-                    return;
-                }
-                DetallePedido detalleActualizado = repositorio.actualizar(id, detalle);
-                if (detalleActualizado != null) {
-                    ctx.contentType("application/json").result(gson.toJson(detalleActualizado));
-                } else {
-                    ctx.status(404).result(gson.toJson("DetallePedido no encontrado"));
-                }
-            } catch (NumberFormatException e) {
-                ctx.status(400).result(gson.toJson("Error: ID inválido"));
-            } catch (Exception e) {
-                ctx.status(500).result(gson.toJson("Error interno del servidor"));
-            }
+        app.put("/detalle-pedidos/{id}", ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            DetallePedido detalle = gson.fromJson(ctx.body(), DetallePedido.class);
+            ctx.json(repositorio.actualizar(id, detalle));
         });
 
-        app.delete("/detalle-pedido/{id}", ctx -> {
-            try {
-                int id = Integer.parseInt(ctx.pathParam("id"));
-                boolean eliminado = repositorio.eliminar(id);
-                if (eliminado) {
-                    ctx.status(200).result(gson.toJson("DetallePedido eliminado"));
-                } else {
-                    ctx.status(404).result(gson.toJson("DetallePedido no encontrado"));
-                }
-            } catch (NumberFormatException e) {
-                ctx.status(400).result(gson.toJson("Error: ID inválido"));
-            }
+        app.delete("/detalle-pedidos/{id}", ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            repositorio.eliminar(id);
+            ctx.result("Detalle eliminado");
         });
     }
 }
