@@ -3,14 +3,18 @@ package com.tienda;
 import io.javalin.Javalin;
 import io.javalin.json.JavalinJackson;
 
-import com.tienda.controllers.TransferenciaController;
-import com.tienda.controllers.ProveedorController;
-import com.tienda.controllers.ClienteController;
-import com.tienda.controllers.CategoriaController;
-import com.tienda.controllers.DetallePedidoController;
-import com.tienda.controllers.EmpleadoController;
-import com.tienda.controllers.PedidoController;
-import com.tienda.controllers.ProductoController;
+import com.tienda.controllers.inventarios.TransferenciaController;
+import com.tienda.controllers.inventarios.ProveedorController;
+import com.tienda.controllers.facturas.ClienteController;
+import com.tienda.controllers.facturas.CategoriaController;
+import com.tienda.controllers.descuentos.DetallePedidoController;
+import com.tienda.controllers.facturas.EmpleadoController;
+import com.tienda.controllers.facturas.PedidoController;
+import com.tienda.controllers.inventarios.ProductoController;
+import com.tienda.controllers.inventarios.SucursalController;
+import com.tienda.controllers.inventarios.InventarioController;
+import com.tienda.controllers.facturas.FacturaController;
+import com.tienda.controllers.descuentos.DescuentoController;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,7 +23,6 @@ public class Main {
         }).start(4567);
 
         // Registrar todos los controladores
-
         CategoriaController.init(app);
         DetallePedidoController.init(app);
         EmpleadoController.init(app);
@@ -28,6 +31,12 @@ public class Main {
         ClienteController.init(app);
         ProveedorController.init(app);
         TransferenciaController.init(app);
+
+        // Registrar controladores adicionales
+        SucursalController.init(app);
+        InventarioController.init(app);
+        FacturaController.init(app);
+        DescuentoController.init(app);
 
         System.out.println("Servidor corriendo en http://localhost:4567");
     }
