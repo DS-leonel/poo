@@ -1,4 +1,4 @@
-package com.tienda.controllers.Seguridad;
+package com.tienda.controllers.seguridad;
 
 import com.google.gson.Gson;
 import com.tienda.models.Seguridad.Rol;
