@@ -3,6 +3,8 @@ package com.tienda;
 import io.javalin.Javalin;
 import io.javalin.json.JavalinJackson;
 
+import com.tienda.controllers.inventarios.LoteController;
+import com.tienda.controllers.Seguridad.RolController;
 import com.tienda.controllers.inventarios.TransferenciaController;
 import com.tienda.controllers.inventarios.ProveedorController;
 import com.tienda.controllers.facturas.ClienteController;
@@ -37,6 +39,8 @@ public class Main {
         InventarioController.init(app);
         FacturaController.init(app);
         DescuentoController.init(app);
+        RolController.init(app);
+        LoteController.init(app);
 
         System.out.println("Servidor corriendo en http://localhost:4567");
     }
