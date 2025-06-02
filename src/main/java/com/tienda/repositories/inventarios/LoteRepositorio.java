@@ -1,20 +1,17 @@
 package com.tienda.repositories.inventarios;
 
 import com.tienda.models.inventarios.Lote;
-import java.util.stream.Collectors;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LoteRepositorio {
     private final Map<Integer, Lote> lotes = new HashMap<>();
 
-
     public void agregar(Lote lote) {
         validarLote(lote);
-
         if (lotes.containsKey(lote.getId())) {
             throw new IllegalArgumentException("Ya existe un lote con ese ID: " + lote.getId());
         }
-
         lotes.put(lote.getId(), lote);
     }
 
@@ -29,7 +26,7 @@ public class LoteRepositorio {
 
     public List<Lote> obtenerPorProductoId(int productoId) {
         if (productoId <= 0) {
-            throw new IllegalArgumentException("ID del producto debe ser > 0 para buscar lotes.");
+            throw new IllegalArgumentException("ID del producto debe ser mayor que 0 para buscar lotes.");
         }
         return lotes.values().stream()
                 .filter(lote -> lote.getProductoId() == productoId)
@@ -42,7 +39,6 @@ public class LoteRepositorio {
         if (id != lote.getId()) {
             throw new IllegalArgumentException("El ID del lote en el path y en el cuerpo no coinciden.");
         }
-
         lotes.put(id, lote);
         return lote;
     }
@@ -54,17 +50,16 @@ public class LoteRepositorio {
 
     private void validarLote(Lote lote) {
         if (lote == null) {
-            throw new IllegalArgumentException("El objeto Lote no puede ser nulo.");
+            throw new IllegalArgumentException("El lote no puede ser nulo.");
         }
-
         if (lote.getId() <= 0) {
-            throw new IllegalArgumentException("ID del lote debe ser > 0");
+            throw new IllegalArgumentException("El ID del lote debe ser mayor que 0.");
         }
-        if (lote.getNumeroLote() == null || lote.getNumeroLote().trim().isEmpty()){
-            throw new IllegalArgumentException("Número de lote no puede ser vacío.");
+        if (lote.getNumeroLote() == null || lote.getNumeroLote().trim().isEmpty()) {
+            throw new IllegalArgumentException("El número de lote no puede estar vacío.");
         }
         if (lote.getProductoId() <= 0) {
-            throw new IllegalArgumentException("ID del producto asociado al lote debe ser > 0");
+            throw new IllegalArgumentException("El ID del producto asociado al lote debe ser mayor que 0.");
         }
         if (lote.getCantidad() < 0) {
             throw new IllegalArgumentException("La cantidad del lote no puede ser negativa.");
@@ -73,7 +68,7 @@ public class LoteRepositorio {
 
     private void validarIdExistente(int id) {
         if (id <= 0) {
-            throw new IllegalArgumentException("ID del lote debe ser > 0 para buscar, actualizar o eliminar.");
+            throw new IllegalArgumentException("El ID del lote debe ser mayor que 0.");
         }
         if (!lotes.containsKey(id)) {
             throw new IllegalArgumentException("Lote con ID " + id + " no encontrado.");

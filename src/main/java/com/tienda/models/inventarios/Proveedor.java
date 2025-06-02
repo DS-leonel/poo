@@ -1,5 +1,7 @@
 package com.tienda.models.inventarios;
 
+import java.util.Objects;
+
 public class Proveedor {
     private int id;
     private String nombre;
@@ -36,7 +38,7 @@ public class Proveedor {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del proveedor no puede estar vacío");
         }
-        this.nombre = nombre;
+        this.nombre = nombre.trim();
     }
 
     public String getContacto() {
@@ -44,11 +46,7 @@ public class Proveedor {
     }
 
     public void setContacto(String contacto) {
-        if (contacto == null) {
-            this.contacto = "";
-        } else {
-            this.contacto = contacto.trim();
-        }
+        this.contacto = (contacto == null) ? "" : contacto.trim();
     }
 
     public String getTelefono() {
@@ -67,13 +65,34 @@ public class Proveedor {
     }
 
     public void setDireccion(String direccion) {
-        if (direccion == null) {
-            this.direccion = "";
-        } else {
-            this.direccion = direccion.trim();
-        }
+        this.direccion = (direccion == null) ? "" : direccion.trim();
     }
 
+    @Override
+    public String toString() {
+        return "Proveedor{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", contacto='" + contacto + '\'' +
+                ", telefono='" + telefono + '\'' +
+                ", direccion='" + direccion + '\'' +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Proveedor)) return false;
+        Proveedor that = (Proveedor) o;
+        return id == that.id &&
+                Objects.equals(nombre, that.nombre) &&
+                Objects.equals(contacto, that.contacto) &&
+                Objects.equals(telefono, that.telefono) &&
+                Objects.equals(direccion, that.direccion);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nombre, contacto, telefono, direccion);
+    }
 }

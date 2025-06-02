@@ -26,6 +26,9 @@ public class CategoriaRepositorio {
     public Categoria actualizar(int id, Categoria categoria) {
         validarId(id);
         validarCategoria(categoria);
+        if (id != categoria.getId()) {
+            throw new IllegalArgumentException("El ID en la ruta y el ID del cuerpo no coinciden.");
+        }
         categorias.put(id, categoria);
         return categoria;
     }
@@ -36,14 +39,23 @@ public class CategoriaRepositorio {
     }
 
     private void validarId(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("El ID debe ser mayor que cero.");
+        }
         if (!categorias.containsKey(id)) {
-            throw new IllegalArgumentException("Categoría no encontrada");
+            throw new IllegalArgumentException("Categoría con ID " + id + " no encontrada.");
         }
     }
 
     private void validarCategoria(Categoria categoria) {
-        if (categoria == null || categoria.getNombre() == null || categoria.getNombre().isEmpty()) {
-            throw new IllegalArgumentException("Datos inválidos de categoría");
+        if (categoria == null) {
+            throw new IllegalArgumentException("La categoría no puede ser nula.");
+        }
+        if (categoria.getId() <= 0) {
+            throw new IllegalArgumentException("El ID de la categoría debe ser mayor que cero.");
+        }
+        if (categoria.getNombre() == null || categoria.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de la categoría no puede estar vacío.");
         }
     }
 }

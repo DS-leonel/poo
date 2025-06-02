@@ -1,48 +1,74 @@
 package com.tienda.models.seguridad;
 
+import java.util.Objects;
+
 public class Usuario {
     private int id;
-    private String nombreUsuario;
-    private String contrasena;
-    private String rol;
+    private String nombre;
+    private String email;
 
     public Usuario() {}
 
-    public Usuario(int id, String nombreUsuario, String contrasena, String rol) {
+    public Usuario(int id, String nombre, String email) {
         setId(id);
-        setNombreUsuario(nombreUsuario);
-        setContrasena(contrasena);
-        setRol(rol);
+        setNombre(nombre);
+        setEmail(email);
     }
 
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
     public void setId(int id) {
-        if (id <= 0) throw new IllegalArgumentException("ID debe ser > 0");
+        if (id <= 0) {
+            throw new IllegalArgumentException("El ID del usuario debe ser mayor que cero.");
+        }
         this.id = id;
     }
 
-    public String getNombreUsuario() { return nombreUsuario; }
-
-    public void setNombreUsuario(String nombreUsuario) {
-        if (nombreUsuario == null || nombreUsuario.trim().isEmpty())
-            throw new IllegalArgumentException("Nombre de usuario no puede estar vacío");
-        this.nombreUsuario = nombreUsuario;
+    public String getNombre() {
+        return nombre;
     }
 
-    public String getContrasena() { return contrasena; }
-
-    public void setContrasena(String contrasena) {
-        if (contrasena == null || contrasena.length() < 6)
-            throw new IllegalArgumentException("Contraseña debe tener al menos 6 caracteres");
-        this.contrasena = contrasena;
+    public void setNombre(String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del usuario no puede estar vacío.");
+        }
+        this.nombre = nombre.trim();
     }
 
-    public String getRol() { return rol; }
+    public String getEmail() {
+        return email;
+    }
 
-    public void setRol(String rol) {
-        if (rol == null || rol.trim().isEmpty())
-            throw new IllegalArgumentException("Rol no puede estar vacío");
-        this.rol = rol;
+    public void setEmail(String email) {
+        if (email == null || email.trim().isEmpty() || !email.contains("@")) {
+            throw new IllegalArgumentException("El email del usuario es inválido.");
+        }
+        this.email = email.trim();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Usuario)) return false;
+        Usuario usuario = (Usuario) o;
+        return id == usuario.id &&
+                nombre.equals(usuario.nombre) &&
+                email.equals(usuario.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nombre, email);
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

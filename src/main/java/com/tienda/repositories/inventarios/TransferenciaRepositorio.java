@@ -38,7 +38,7 @@ public class TransferenciaRepositorio {
 
     private void validarIdExistente(int id) {
         if (id <= 0) {
-            throw new IllegalArgumentException("El ID de la transferencia debe ser > 0");
+            throw new IllegalArgumentException("El ID de la transferencia debe ser mayor que cero.");
         }
         if (!transferencias.containsKey(id)) {
             throw new IllegalArgumentException("Transferencia con ID " + id + " no encontrada.");
@@ -68,10 +68,11 @@ public class TransferenciaRepositorio {
         if (transferencia.getIdAlmacenOrigen() == transferencia.getIdAlmacenDestino()) {
             throw new IllegalArgumentException("El almacén de origen y destino no pueden ser el mismo.");
         }
-        if (transferencia.getFecha() == null || transferencia.getFecha().trim().isEmpty()){
+
+        if (transferencia.getFecha() == null) {
             throw new IllegalArgumentException("Fecha inválida o vacía en la transferencia.");
         }
-        if (transferencia.getEstado() == null || transferencia.getEstado().trim().isEmpty()){
+        if (transferencia.getEstado() == null || transferencia.getEstado().trim().isEmpty()) {
             throw new IllegalArgumentException("Estado inválido o vacío en la transferencia.");
         }
     }

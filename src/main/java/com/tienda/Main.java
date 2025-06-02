@@ -22,12 +22,12 @@ import com.tienda.controllers.descuentos.PromocionController;
 import com.tienda.controllers.seguridad.UsuarioController;
 import com.tienda.controllers.inventarios.EnvioController;
 import com.tienda.controllers.facturas.PagoController;
-import com.tienda.controllers.facturas.ReportesController; // Importar el controlador de reportes
+import com.tienda.controllers.facturas.ReportesController;
 
 public class Main {
     public static void main(String[] args) {
         Javalin app = Javalin.create(config -> {
-            config.jsonMapper(new JavalinJackson()); // Usa Jackson para JSON
+            config.jsonMapper(new JavalinJackson());
         }).start(4567);
 
         // Registrar todos los controladores
@@ -52,9 +52,9 @@ public class Main {
         PromocionController.init(app);
         UsuarioController.init(app);
         EnvioController.init(app);
-        PagoController.init(app);
+        new PagoController().init(app);
         DevolucionController.init(app);
-        ReportesController.init(app); // Registrar el controlador de reportes
+        ReportesController.init(app);
 
         System.out.println("Servidor corriendo en http://localhost:4567");
     }

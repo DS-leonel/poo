@@ -9,7 +9,7 @@ public class ClienteRepositorio {
     public void agregar(Cliente cliente) {
         validar(cliente);
         if (clientes.containsKey(cliente.getId())) {
-            throw new IllegalArgumentException("Ya existe un cliente con ese ID");
+            throw new IllegalArgumentException("Ya existe un cliente con el ID: " + cliente.getId());
         }
         clientes.put(cliente.getId(), cliente);
     }
@@ -26,6 +26,9 @@ public class ClienteRepositorio {
     public Cliente actualizar(int id, Cliente cliente) {
         validarId(id);
         validar(cliente);
+        if (id != cliente.getId()) {
+            throw new IllegalArgumentException("El ID en la ruta y el ID del cliente no coinciden.");
+        }
         clientes.put(id, cliente);
         return cliente;
     }
@@ -35,15 +38,24 @@ public class ClienteRepositorio {
         clientes.remove(id);
     }
 
-    private void validar(Cliente c) {
-        if (c == null || c.getNombre() == null || c.getNombre().isEmpty()) {
-            throw new IllegalArgumentException("Datos inválidos del cliente");
+    private void validar(Cliente cliente) {
+        if (cliente == null) {
+            throw new IllegalArgumentException("El cliente no puede ser nulo.");
+        }
+        if (cliente.getId() <= 0) {
+            throw new IllegalArgumentException("El ID del cliente debe ser mayor que cero.");
+        }
+        if (cliente.getNombre() == null || cliente.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del cliente no puede estar vacío.");
         }
     }
 
     private void validarId(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("El ID debe ser mayor que cero.");
+        }
         if (!clientes.containsKey(id)) {
-            throw new IllegalArgumentException("Cliente no encontrado");
+            throw new IllegalArgumentException("Cliente con ID " + id + " no encontrado.");
         }
     }
 }

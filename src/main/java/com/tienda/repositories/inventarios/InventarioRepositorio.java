@@ -19,32 +19,31 @@ public class InventarioRepositorio {
     }
 
     public Inventario obtener(int id) {
-        validarId(id);
+        validarExistencia(id);
         return inventarios.get(id);
     }
 
     public Inventario actualizar(int id, Inventario inventario) {
-        validarId(id);
+        validarExistencia(id);
         validarInventario(inventario);
         inventarios.put(id, inventario);
         return inventario;
     }
 
     public void eliminar(int id) {
-        validarId(id);
+        validarExistencia(id);
         inventarios.remove(id);
     }
 
-    private void validarId(int id) {
+    private void validarExistencia(int id) {
         if (!inventarios.containsKey(id)) {
-            throw new IllegalArgumentException("Inventario no encontrado");
+            throw new NoSuchElementException("Inventario no encontrado con ID: " + id);
         }
     }
 
     private void validarInventario(Inventario inventario) {
         if (inventario == null || inventario.getCantidad() < 0) {
-            throw new IllegalArgumentException("Datos inválidos de inventario");
+            throw new IllegalArgumentException("Datos inválidos del inventario");
         }
     }
 }
-

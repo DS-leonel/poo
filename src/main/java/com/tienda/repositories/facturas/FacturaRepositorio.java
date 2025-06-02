@@ -7,10 +7,8 @@ public class FacturaRepositorio {
     private final Map<Integer, Factura> facturas = new HashMap<>();
 
     public void agregar(Factura factura) {
-        validarFactura(factura);
-        if (facturas.containsKey(factura.getId())) {
-            throw new IllegalArgumentException("Ya existe una factura con el ID: " + factura.getId());
-        }
+        validarFacturaNoNula(factura);
+        validarFacturaNoExiste(factura.getId());
         facturas.put(factura.getId(), factura);
     }
 
@@ -19,32 +17,38 @@ public class FacturaRepositorio {
     }
 
     public Factura obtener(int id) {
-        validarId(id);
+        validarFacturaExiste(id);
         return facturas.get(id);
     }
 
-    public Factura actualizar(int id, Factura factura) {
-        validarId(id);
-        validarFactura(factura);
-        facturas.put(id, factura);
-        return factura;
+    public Factura actualizar(int id, Factura facturaActualizada) {
+        validarFacturaExiste(id);
+        validarFacturaNoNula(facturaActualizada);
+        facturas.put(id, facturaActualizada);
+        return facturaActualizada;
     }
 
-    public void eliminar(int id) {
-        validarId(id);
+    public boolean eliminar(int id) {
+        validarFacturaExiste(id);
         facturas.remove(id);
+        return true;
     }
 
-    private void validarId(int id) {
-        if (!facturas.containsKey(id)) {
-            throw new IllegalArgumentException("Factura no encontrada");
+    private void validarFacturaNoNula(Factura factura) {
+        if (factura == null || factura.getTotal() < 0) {
+            throw new IllegalArgumentException("Datos inválidos de factura: factura nula o total negativo.");
         }
     }
 
-    private void validarFactura(Factura factura) {
-        if (factura == null || factura.getTotal() < 0) {
-            throw new IllegalArgumentException("Datos inválidos de factura");
+    private void validarFacturaExiste(int id) {
+        if (!facturas.containsKey(id)) {
+            throw new IllegalArgumentException("Factura no encontrada con ID: " + id);
+        }
+    }
+
+    private void validarFacturaNoExiste(int id) {
+        if (facturas.containsKey(id)) {
+            throw new IllegalArgumentException("Ya existe una factura con ID: " + id);
         }
     }
 }
-

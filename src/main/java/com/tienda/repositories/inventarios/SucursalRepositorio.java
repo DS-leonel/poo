@@ -19,32 +19,38 @@ public class SucursalRepositorio {
     }
 
     public Sucursal obtener(int id) {
-        validarId(id);
+        validarIdExistente(id);
         return sucursales.get(id);
     }
 
     public Sucursal actualizar(int id, Sucursal sucursal) {
-        validarId(id);
+        validarIdExistente(id);
         validarSucursal(sucursal);
+        sucursal.setId(id);
         sucursales.put(id, sucursal);
         return sucursal;
     }
 
     public void eliminar(int id) {
-        validarId(id);
+        validarIdExistente(id);
         sucursales.remove(id);
     }
 
-    private void validarId(int id) {
+    private void validarIdExistente(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("El ID de la sucursal debe ser mayor que cero.");
+        }
         if (!sucursales.containsKey(id)) {
-            throw new IllegalArgumentException("Sucursal no encontrada");
+            throw new IllegalArgumentException("Sucursal con ID " + id + " no encontrada.");
         }
     }
 
     private void validarSucursal(Sucursal sucursal) {
-        if (sucursal == null || sucursal.getNombre() == null || sucursal.getNombre().isEmpty()) {
-            throw new IllegalArgumentException("Datos inválidos de sucursal");
+        if (sucursal == null) {
+            throw new IllegalArgumentException("Los datos de la sucursal no pueden ser nulos.");
+        }
+        if (sucursal.getNombre() == null || sucursal.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de la sucursal no puede estar vacío.");
         }
     }
 }
-

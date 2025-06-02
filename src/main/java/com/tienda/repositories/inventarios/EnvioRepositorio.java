@@ -1,28 +1,29 @@
 package com.tienda.repositories.inventarios;
 
 import com.tienda.models.inventarios.Envio;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class EnvioRepositorio {
-    private List<Envio> envios = new ArrayList<>();
+    private final List<Envio> envios = new ArrayList<>();
 
     public List<Envio> obtenerTodos() {
-        return envios;
+        return new ArrayList<>(envios);
     }
 
-    public void guardar(Envio envio) {
+    public void agregar(Envio envio) {
         envios.add(envio);
     }
 
-    public void eliminarPorId(int id) {
-        envios.removeIf(e -> e.getId() == id);
-    }
-
-    public Envio buscarPorId(int id) {
+    public Envio obtener(int id) {
         return envios.stream()
                 .filter(e -> e.getId() == id)
                 .findFirst()
                 .orElse(null);
+    }
+
+    public boolean eliminar(int id) {
+        return envios.removeIf(e -> e.getId() == id);
     }
 }

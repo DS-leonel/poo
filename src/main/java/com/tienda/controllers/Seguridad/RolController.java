@@ -1,10 +1,12 @@
 package com.tienda.controllers.seguridad;
 
 import com.google.gson.Gson;
-import com.tienda.models.Seguridad.Rol;
-import com.tienda.repositories.Seguridad.RolRepositorio;
+import com.tienda.models.seguridad.Rol;
+import com.tienda.repositories.seguridad.RolRepositorio;
 import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
+
+import java.util.Locale;
 
 public class RolController {
     private static final RolRepositorio repositorio = new RolRepositorio();
@@ -38,7 +40,7 @@ public class RolController {
                 if (rol != null) {
                     ctx.json(rol);
                 } else {
-
+                    ctx.status(HttpStatus.NOT_FOUND).result("Rol no encontrado");
                 }
             } catch (NumberFormatException e) {
                 ctx.status(HttpStatus.BAD_REQUEST).result("El ID debe ser un número entero.");
@@ -59,8 +61,8 @@ public class RolController {
             } catch (NumberFormatException e) {
                 ctx.status(HttpStatus.BAD_REQUEST).result("El ID debe ser un número entero.");
             } catch (IllegalArgumentException e) {
-
-                if (e.getMessage().contains("no encontrado")) {
+                String msg = e.getMessage() != null ? e.getMessage().toLowerCase(Locale.ROOT) : "";
+                if (msg.contains("no encontrado")) {
                     ctx.status(HttpStatus.NOT_FOUND).result(e.getMessage());
                 } else {
                     ctx.status(HttpStatus.BAD_REQUEST).result(e.getMessage());

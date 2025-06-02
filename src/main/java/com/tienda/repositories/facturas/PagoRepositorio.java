@@ -1,7 +1,6 @@
 package com.tienda.repositories.facturas;
 
 import com.tienda.models.facturas.Pago;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,17 @@ public class PagoRepositorio {
                 .orElse(null);
     }
 
-    public void eliminarPorId(int id) {
-        pagos.removeIf(pago -> pago.getId() == id);
+    public boolean eliminarPorId(int id) {
+        return pagos.removeIf(pago -> pago.getId() == id);
+    }
+
+    public Pago actualizar(int id, Pago pagoActualizado) {
+        for (int i = 0; i < pagos.size(); i++) {
+            if (pagos.get(i).getId() == id) {
+                pagos.set(i, pagoActualizado);
+                return pagoActualizado;
+            }
+        }
+        throw new IllegalArgumentException("Pago con ID " + id + " no encontrado");
     }
 }

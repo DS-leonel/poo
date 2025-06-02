@@ -36,8 +36,11 @@ public class PedidoRepositorio {
     }
 
     private void validar(Pedido p) {
-        if (p == null || p.getFecha() == null) {
+        if (p == null) {
             throw new IllegalArgumentException("Datos inválidos del pedido");
+        }
+        if (p.getFecha() == null) {
+            throw new IllegalArgumentException("La fecha del pedido es inválida");
         }
     }
 

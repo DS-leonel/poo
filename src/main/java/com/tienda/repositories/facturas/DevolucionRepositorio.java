@@ -1,6 +1,7 @@
 package com.tienda.repositories.facturas;
 
 import com.tienda.models.facturas.Devolucion;
+import java.time.LocalDate;
 import java.util.*;
 
 public class DevolucionRepositorio {
@@ -60,13 +61,19 @@ public class DevolucionRepositorio {
         if (d.getCantidad() <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser positiva.");
         }
-        if (d.getMotivo() == null || d.getMotivo().trim().isEmpty()) {
+
+        String motivo = d.getMotivo();
+        if (motivo == null || motivo.trim().isEmpty()) {
             throw new IllegalArgumentException("El motivo no puede estar vacío.");
         }
-        if (d.getFecha() == null || d.getFecha().trim().isEmpty()) {
-            throw new IllegalArgumentException("La fecha no puede estar vacía.");
+
+        LocalDate fecha = d.getFecha();
+        if (fecha == null) {
+            throw new IllegalArgumentException("La fecha no puede ser nula.");
         }
-        if (d.getEstado() == null || d.getEstado().trim().isEmpty()) {
+
+        String estado = d.getEstado();
+        if (estado == null || estado.trim().isEmpty()) {
             throw new IllegalArgumentException("El estado no puede estar vacío.");
         }
     }
