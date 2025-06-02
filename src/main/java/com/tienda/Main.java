@@ -3,6 +3,7 @@ package com.tienda;
 import io.javalin.Javalin;
 import io.javalin.json.JavalinJackson;
 
+import com.tienda.controllers.facturas.DevolucionController;
 import com.tienda.controllers.inventarios.LoteController;
 import com.tienda.controllers.seguridad.RolController;
 import com.tienda.controllers.inventarios.TransferenciaController;
@@ -51,6 +52,7 @@ public class Main {
         UsuarioController.init(app);
         EnvioController.init(app);
         PagoController.init(app);
+        DevolucionController.init(app);
 
         System.out.println("Servidor corriendo en http://localhost:4567");
     }
